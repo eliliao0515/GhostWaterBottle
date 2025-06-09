@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "511537109733",
+    "project_id": "ghostwaterbottle",
+    "storage_bucket": "ghostwaterbottle.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:511537109733:android:0027a4ffc6623141e5d20c",
+        "android_client_info": {
+          "package_name": "com.example.ghost"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBHMUvGlkJ8sInW6Iw2Umx-nOD58DC5-Ng"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
