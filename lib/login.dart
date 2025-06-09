@@ -68,27 +68,38 @@ class _LoginScreenState extends State<LoginScreen> {
 
               // TextField with email pre-filled
 
-              TextFormField(
-                controller: _emailController,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'email@domain.com', 
-                  hintText: 'you@example.com',
-                ),
-                validator: (value) => value == null || value.isEmpty ? 'Please enter your email' : null,
-              ),
+              Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // All your input fields here
+                    TextFormField(
+                      controller: _emailController,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'email@domain.com', 
+                        hintText: 'you@example.com',
+                      ),
+                      validator: (value) => value == null || value.isEmpty ? 'Please enter your email' : null,
+                    ),
 
-              const SizedBox(height: 24),
+                    const SizedBox(height: 24),
 
-              TextFormField(
-                controller: _passwordController,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Password',
-                  hintText: 'Password',
+                    TextFormField(
+                      controller: _passwordController,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Password',
+                        hintText: 'Password',
+                      ),
+                      obscureText: true,
+                      validator: (value) => value == null || value.isEmpty ? 'Please enter your password' : null,
+                    ),
+
+                    // The rest of your fields and buttons
+                  ],
                 ),
-                obscureText: true,
-                validator: (value) => value == null || value.isEmpty ? 'Please enter your password' : null,
               ),
 
               const SizedBox(height: 24),
