@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
+
 import 'package:firebase_auth/firebase_auth.dart'; // Firebase authentication
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'dart:io'; // To check for iOS platform
+
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _RegisterPageState createState() => _RegisterPageState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _ageController = TextEditingController();
@@ -174,8 +179,48 @@ class _LoginScreenState extends State<LoginScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
-                  onPressed: () {
-                    // TODO: Add Google login logic
+                  onPressed: () async {
+                    try {
+                      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+                      if (googleUser == null) return; // user canceled
+
+                      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+                      final credential = GoogleAuthProvider.credential(
+                        accessToken: googleAuth.accessToken,
+                        idToken: googleAuth.idToken,
+                      );
+
+                      final UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+
+                      // Optionally save user info to Firestore
+                      await FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(userCredential.user!.uid)
+                          .set({
+                        'name': userCredential.user!.displayName,
+                        'email': userCredential.user!.email,
+                      }, SetOptions(merge: true));
+
+                      Navigator.pushNamed(context, '/second', arguments: {
+                        'name': userCredential.user!.displayName ?? '',
+                        'age': '', // You may not get age from Google
+                      });
+                    } catch (e) {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('Google Sign-In Error'),
+                          content: Text(e.toString()),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text('OK'),
+                            )
+                          ],
+                        ),
+                      );
+                    }
                   },
                   icon: Image.asset(
                     'assets/icons/icon_google.png',
@@ -197,8 +242,49 @@ class _LoginScreenState extends State<LoginScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
-                  onPressed: () {
-                    // TODO: Add Apple login logic
+                  onPressed: () async {
+                    if (!Platform.isIOS) return;
+
+                    try {
+                      final credential = await SignInWithApple.getAppleIDCredential(
+                        scopes: [
+                          AppleIDAuthorizationScopes.email,
+                          AppleIDAuthorizationScopes.fullName,
+                        ],
+                      );
+
+                      final oauthCredential = OAuthProvider("apple.com").credential(
+                        idToken: credential.identityToken,
+                        accessToken: credential.authorizationCode,
+                      );
+
+                      final userCredential = await FirebaseAuth.instance.signInWithCredential(oauthCredential);
+
+                      // Save to Firestore (optional)
+                      await FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(userCredential.user!.uid)
+                          .set({
+                        'name': userCredential.user!.displayName ?? '',
+                        'email': userCredential.user!.email ?? '',
+                      }, SetOptions(merge: true));
+
+                      Navigator.pushNamed(context, '/second', arguments: {
+                        'name': userCredential.user!.displayName ?? '',
+                        'age': '',
+                      });
+                    } catch (e) {
+                      showDialog(
+                        context: context,
+                        builder: (_) => AlertDialog(
+                          title: const Text('Apple Sign-In Failed'),
+                          content: Text(e.toString()),
+                          actions: [
+                            TextButton(onPressed: () => Navigator.pop(context), child: const Text("OK")),
+                          ],
+                        ),
+                      );
+                    }
                   },
                   icon: Image.asset(
                     'assets/icons/icon_apple.png',

@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+
+// Navigation
 import 'home.dart';
-import 'login.dart';
+import 'RegisterScreen.dart';
+
+// Firebase
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
@@ -19,7 +23,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       routes: {
-        '/': (context) => const LoginScreen(),
+        '/': (context) => const RegisterPage(),
         '/login': (context) => const HomePage(),
       },
     );
