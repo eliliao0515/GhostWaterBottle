@@ -302,6 +302,23 @@ class _RegisterPageState extends State<RegisterPage> {
 
               const SizedBox(height: 24),
 
+              GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, '/login');
+                },
+                child: const Text(
+                  '已經加入了嗎，點擊直接登錄',
+                  style: TextStyle(
+                    color: Colors.blue,
+                    decoration: TextDecoration.underline,
+                    fontSize: 12,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
               const Text(
                 '通過點擊繼續，您同意我們的《服務條款》和《隱私政策》',
                 textAlign: TextAlign.center,
